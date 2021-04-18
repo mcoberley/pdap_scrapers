@@ -1,6 +1,4 @@
 # Stolen from my browser --> inspect --> network --> copied as cURL --> pasted into Postman --> copied out from code tab as Python --> tweaked by me.
-
-from typing import ClassVar
 from requests import request
 from json import dumps
 
@@ -58,6 +56,5 @@ class CityProtect:
         return request("POST", url, headers=self.headers, data=payload).json()
 
 
-        # for debugging
-        # print(get_sex_offenders())
-
+# for debugging
+# print(CityProtect.get_sex_offenders())

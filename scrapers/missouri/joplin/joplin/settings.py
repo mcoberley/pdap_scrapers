@@ -67,11 +67,18 @@ DEFAULT_REQUEST_HEADERS = {
 FILES_URLS_FIELD = 'file_urls'
 FILES_RESULT_FIELD = 'files'
 MEDIA_ALLOW_REDIRECTS = True
-FILES_STORE = '/Users/mcoberley/scrapy_results/files'
+FILES_STORE = './files'
+
 ITEM_PIPELINES = {
    'joplin.pipelines.JoplinPipeline': 100,
+   'stack.pipelines.MongoDBPipeline' : 50, 
    'scrapy.pipelines.files.FilesPipeline': 1,
 }
+
+MONGODB_SERVER = "localhost"
+MONGODB_PORT = 27017
+MONGODB_DB = "pdap"
+MONGODB_COLLECTION = "sex_offenders"
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
