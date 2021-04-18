@@ -38,7 +38,7 @@ class PrimaryAddress(scrapy.Item):
     city = scrapy.Field()
     county = scrapy.Field()
 
-class PrimaryName(scrapy.Item):
+class PrimaryNameItem(scrapy.Item):
     first_name = scrapy.Field()
     middle_name = scrapy.Field()
     last_name = scrapy.Field()
