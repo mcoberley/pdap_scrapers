@@ -18,18 +18,111 @@ class CityProtectSpider(scrapy.Spider):
 
     def parse(self, response):
         sex_offenders_list = CityProtect.get_sex_offenders()
-        sex_offenders_items = [CityProtectItem()]
+        sex_offenders_items = []
 
         for sex_offender in sex_offenders_list:
-            sex_offenders_item = CityProtectItem()
+            sex_offenders_items.append(SexOffender(sex_offender))
 
-            sex_offenders_item["age"] = sex_offender["age"]
-            sex_offenders_item["name"] = sex_offender["name"]
+        yield sex_offenders_items
 
-            alias_items = []
-            aliases = sex_offender["aliases"]
-            for alias in aliases:
-                alias_items.append(
+
+class SexOffender: 
+    def __init__(self, _sex_offender):
+        return self.parseSexOffender(sex_offender=_sex_offender)
+
+    def parseSexOffender(self, sex_offender):
+        sex_offenders_item = CityProtectItem()
+
+        sex_offenders_item["age"] = sex_offender["age"]
+        sex_offenders_item["name"] = sex_offender["name"]
+        sex_offenders_item["aliases"] = self.parseAliases(sex_offender["aliases"])
+        sex_offenders_item["charges"] = self.parseCharges(sex_offender["charges"])
+        sex_offenders_item["date_of_birth"] = sex_offender["date_of_birth"]
+        sex_offenders_item["last_registration"] = sex_offender["last_registration"]
+        sex_offenders_item["eyes"] = sex_offender["eyes"]
+        sex_offenders_item["hair"] = sex_offender["hair"]
+        sex_offenders_item["height"] = sex_offender["height"]
+        sex_offenders_item["is_predator"] = sex_offender["is_predator"]
+        sex_offenders_item["is_absconder"] = sex_offender["is_absconder"]
+        sex_offenders_item["location"] = self.parseLocation(sex_offender["location"])
+        sex_offenders_item["marks"] = self.parseMarks(sex_offender["marks"])
+        sex_offenders_item["offender_id"] = sex_offender["offender_id"]
+        sex_offenders_item["other_addresses"] = self.parseOtherAddresses(sex_offender["other_addresses"])
+        sex_offenders_item["photo_url"] = sex_offender["photo_url"]
+        sex_offenders_item["primary_address"] = self.parsePrimaryAddress(sex_offender["primary_address"])
+        sex_offenders_item["primary_name"] = self.parsePrimaryName(sex_offender["primary_name"])
+        sex_offenders_item["race"] = sex_offender["race"]
+        sex_offenders_item["sex"] = sex_offender["sex"]
+        sex_offenders_item["weight"] = sex_offender["weight"]
+        sex_offenders_item["_id"] = sex_offender["_id"]
+        sex_offenders_item["id"] = sex_offender["id"]
+
+        return dict(sex_offenders_item)
+
+    def parseOtherAddresses(other_addresses):
+        # @TODO add logic to loop through other addresses
+        # also find out the structure of other_addresses
+        return []
+
+    def parsePrimaryAddress(primary_address):
+        return dict(
+            PrimaryAddress(
+                {
+                    "zip_code": primary_address["zip_code"],
+                    "street_1": primary_address["street_1"],
+                    "street_2": primary_address["street_2"],
+                    "street_3": primary_address["street_3"],
+                    "state": primary_address["state"],
+                    "city": primary_address["city"],
+                    "county": primary_address["county"],
+                }
+            )
+        )
+
+    def parseLocation(location):
+        return dict(
+            LocationItem(
+                {
+                    "type": location["type"],
+                    "coordinates": location["coordinates"],
+                }
+            )
+        )
+
+    def parsePrimaryName(primary_name):
+        return dict(
+            PrimaryNameItem(
+                {
+                    "first_name": primary_name["first_name"],
+                    "middle_name": primary_name["middle_name"],
+                    "last_name": primary_name["last_name"],
+                    "suffix": primary_name["suffix"],
+                }
+            )
+        )
+
+    def parseCharges(charges):
+        charge_items = []
+        _charges = charges
+        for charge in _charges:
+            charge_items.append(
+                dict(
+                    ChargeItem(
+                        {
+                            "offender_id": charge["offender_id"],
+                            "charge": charge["charge"],
+                        }
+                    )
+                )
+            )
+        return charge_items
+
+    def parseAliases(aliases):
+        alias_items = []
+        _aliases = aliases
+        for alias in _aliases:
+            alias_items.append(
+                dict(
                     AliasItem(
                         {
                             "offender_id": alias["offender_id"],
@@ -40,90 +133,15 @@ class CityProtectSpider(scrapy.Spider):
                         }
                     )
                 )
+            )
+        return alias_items
 
-            sex_offenders_item["aliases"] = alias_items
-
-            charge_items = []
-            charges = sex_offender["charges"]
-            for charge in charges:
-                charge_items.append(
-                    ChargeItem(
-                        {
-                            "offender_id": charge["offender_id"],
-                            "charge": charge["charge"],
-                        }
-                    )
+    def parseMarks(marks):
+        mark_items = [MarkItem()]
+        _marks = marks
+        for mark in _marks:
+            mark_items.append(
+                dict(
+                    MarkItem({"offender_id": mark["offender_id"], "mark": mark["mark"]})
                 )
-
-            sex_offenders_item["charges"] = charge_items
-
-            sex_offenders_item["date_of_birth"] = sex_offender["date_of_birth"]
-            sex_offenders_item["last_registration"] = sex_offender["last_registration"]
-            sex_offenders_item["eyes"] = sex_offender["eyes"]
-            sex_offenders_item["hair"] = sex_offender["hair"]
-            sex_offenders_item["height"] = sex_offender["height"]
-            sex_offenders_item["is_predator"] = sex_offender["is_predator"]
-            sex_offenders_item["is_absconder"] = sex_offender["is_absconder"]
-
-            location = LocationItem(
-                {
-                    "type": sex_offender["location"]["type"],
-                    "coordinates": sex_offender["location"]["coordinates"],
-                }
             )
-            sex_offenders_item["location"] = dict(location)
-
-            mark_items = [MarkItem()]
-            marks = sex_offender["marks"]
-            for mark in marks:
-                mark_items.append(
-                    {
-                        "offender_id": mark["offender_id"],
-                        "mark": mark["mark"],
-                    }
-                )
-
-            sex_offenders_item["marks"] = mark_items
-
-            sex_offenders_item["offender_id"] = sex_offender["offender_id"]
-
-            # @TODO add logic to loop through other addresses
-            sex_offenders_item["other_addresses"] = sex_offender["other_addresses"]
-
-            sex_offenders_item["photo_url"] = sex_offender["photo_url"]
-
-            # primary address
-            primary_address = PrimaryAddress(
-                {
-                    "zip_code": sex_offender["primary_address"]["zip_code"],
-                    "street_1": sex_offender["primary_address"]["street_1"],
-                    "street_2": sex_offender["primary_address"]["street_2"],
-                    "street_3": sex_offender["primary_address"]["street_3"],
-                    "state": sex_offender["primary_address"]["state"],
-                    "city": sex_offender["primary_address"]["city"],
-                    "county": sex_offender["primary_address"]["county"],
-                }
-            )
-            sex_offenders_item[primary_address] = dict(primary_address)
-
-            # primary name
-            primary_name = PrimaryNameItem(
-                {
-                    "first_name": sex_offender["primary_name"]["first_name"],
-                    "middle_name": sex_offender["primary_name"]["middle_name"],
-                    "last_name": sex_offender["primary_name"]["last_name"],
-                    "suffix": sex_offender["primary_name"]["suffix"],
-                }
-            )
-            sex_offenders_item["primary_name"] = dict(primary_name)
-
-            sex_offenders_item["race"] = sex_offender["race"]
-            sex_offenders_item["sex"] = sex_offender["sex"]
-            sex_offenders_item["weight"] = sex_offender["weight"]
-            sex_offenders_item["_id"] = sex_offender["_id"]
-            sex_offenders_item["id"] = sex_offender["id"]
-
-            sex_offenders_items.append(dict(sex_offenders_item))
-
-        print(sex_offenders_items)
-        yield sex_offenders_items
