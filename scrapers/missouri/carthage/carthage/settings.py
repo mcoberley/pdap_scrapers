@@ -72,15 +72,15 @@ FILES_STORE = './files'
 
 ITEM_PIPELINES = {
     'carthage.pipelines.CarthagePipeline': 100,
-    'stack.pipelines.MongoDBPipeline' : 50, 
+    # 'stack.pipelines.MongoDBPipeline' : 50, 
     'scrapy.pipelines.files.FilesPipeline': 1,
 }
 
 
-MONGODB_SERVER = "localhost"
-MONGODB_PORT = 27017
-MONGODB_DB = "pdap"
-MONGODB_COLLECTION = "carthage"
+# MONGODB_SERVER = "localhost"
+# MONGODB_PORT = 27017
+# MONGODB_DB = "pdap"
+# MONGODB_COLLECTION = "carthage"
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html

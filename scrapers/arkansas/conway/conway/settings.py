@@ -1,4 +1,4 @@
-# Scrapy settings for joplin project
+# Scrapy settings for conway project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -7,14 +7,14 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = 'joplin'
+BOT_NAME = 'conway'
 
-SPIDER_MODULES = ['joplin.spiders']
-NEWSPIDER_MODULE = 'joplin.spiders'
+SPIDER_MODULES = ['conway.spiders']
+NEWSPIDER_MODULE = 'conway.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'joplin (+http://www.yourdomain.com)'
+#USER_AGENT = 'conway (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
@@ -45,16 +45,17 @@ DEFAULT_REQUEST_HEADERS = {
 
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-#SPIDER_MIDDLEWARES = {
-#    'joplin.middlewares.JoplinSpiderMiddleware': 543,
-#}
+SPIDER_MIDDLEWARES = {
+    'scrapy_splash.SplashDeduplicateArgsMiddleware': 100,
+}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-# DOWNLOADER_MIDDLEWARES = {
-#    'joplin.middlewares.JoplinDownloaderMiddleware': 543,
-#    'scrapy.downloadermiddlewares.robotstxt.RobotsTxtMiddleware': 1,
-# }
+DOWNLOADER_MIDDLEWARES = {
+    'scrapy_splash.SplashCookiesMiddleware': 723,
+    'scrapy_splash.SplashMiddleware': 725,
+    'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
+}
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
@@ -70,15 +71,9 @@ MEDIA_ALLOW_REDIRECTS = True
 FILES_STORE = './files'
 
 ITEM_PIPELINES = {
-   'joplin.pipelines.JoplinPipeline': 100,
-   'stack.pipelines.MongoDBPipeline' : 50, 
-   'scrapy.pipelines.files.FilesPipeline': 1,
+    'conway.pipelines.ConwayPipeline': 300,
+    'scrapy.pipelines.files.FilesPipeline': 1,
 }
-
-MONGODB_SERVER = "localhost"
-MONGODB_PORT = 27017
-MONGODB_DB = "pdap"
-MONGODB_COLLECTION = "sex_offenders"
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
@@ -95,8 +90,13 @@ AUTOTHROTTLE_DEBUG = False
 
 # Enable and configure HTTP caching (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#httpcache-middleware-settings
-# HTTPCACHE_ENABLED = True
+#HTTPCACHE_ENABLED = True
 #HTTPCACHE_EXPIRATION_SECS = 0
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+SPLASH_URL = 'http://localhost:8050'
+DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
+HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'
+SPLASH_COOKIES_DEBUG = True
